@@ -30,5 +30,19 @@ app.add_processor(load_sqlo)
 #+end_src
 
 * Example Code
-  The code here is based directly on [[https://github.com/webpy/webpy.github.com/blob/master/cookbook/sqlalchemy.md][the SQLAlchemy]] documentation in the web.py cookbook. Before running the application, run =python models.py= to set up the SQLite database.
+  The code here is based directly on the [[https://github.com/webpy/webpy.github.com/blob/master/cookbook/sqlalchemy.md][SQLAlchemy]] documentation in the web.py cookbook. Before running the application, run =python models.py= to set up the SQLite database.
 
+* Interactive Use
+  Because it sets =sqlhub.processConnection= if it doesn't find an environment in =web.ctx=, =load_sqlo()= can be used without web.py:
+#+begin_src python
+>>> from models import *
+>>> from app import *
+>>> load_sqlo()
+>>> users=User.select()
+>>> for user in users:
+...     print user
+
+<User 1 name='NOJL' fullname='NOJL jGnTzDx' password='542'>
+<User 2 name='Wdym' fullname='Wdym hBSidWI' password='542'>
+<User 3 name='zixt' fullname='zixt JmOuKSA' password='542'>
+#+end_src
