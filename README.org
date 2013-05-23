@@ -1,48 +1,48 @@
-Example of Using SQLObject with web.py under mod_wsgi
-
 * Problem
+
   A [[http://webpy.org/][web.py]] application's code running under the [[https://httpd.apache.org/][Apache HTTP Server]]'s [[https://code.google.com/p/modwsgi/][mod_wsgi]] will typically be executed in multiple processes/threads. Each process/thread will have its own database connection, and [[http://www.sqlobject.org][SQLObject]]'s default caching behavior can easily cause cache coherency issues.
 
 * Solution
-  Use a load hook that opens a new [[http://www.sqlobject.org/SQLObject.html#transactions][transaction]] for each handler call. If not running as a web.py application (e.g. running in an interactive interpreter for testing/debugging), just open a regular connection.
-#+begin_src python
-def load_sqlo(handler=None):
-    con = connectionForURI('sqlite:mydatabase.db')
-    if not web.ctx.has_key('env'):  # not using web.py
-        sqlhub.processConnection = con
-        return
-    trans = con.transaction()
-    sqlhub.threadConnection = trans
-    try:
-        return handler()
-    except web.HTTPError:
-        trans.commit(close=True)
-        raise
-    except:
-        trans.rollback()
-        trans.begin()
-        raise
-    finally:
-        trans.commit(close=True)
 
-app = web.application(urls, locals())
-app.add_processor(load_sqlo)
-#+end_src
+  Use a load hook that opens a new [[http://www.sqlobject.org/SQLObject.html#transactions][transaction]] for each handler call. If not running as a web.py application (e.g. running in an interactive interpreter for testing/debugging), just open a regular connection.
+
+: def load_sqlo(handler=None):
+:     con = connectionForURI('sqlite:mydatabase.db')
+:     if not web.ctx.has_key('env'):  # not using web.py
+:         sqlhub.processConnection = con
+:         return
+:     trans = con.transaction()
+:     sqlhub.threadConnection = trans
+:     try:
+:         return handler()
+:     except web.HTTPError:
+:         trans.commit(close=True)
+:         raise
+:     except:
+:         trans.rollback()
+:         trans.begin()
+:         raise
+:     finally:
+:         trans.commit(close=True)
+: 
+: app = web.application(urls, locals())
+: app.add_processor(load_sqlo)
 
 * Example Code
+
   The code here is based directly on the [[https://github.com/webpy/webpy.github.com/blob/master/cookbook/sqlalchemy.md][SQLAlchemy]] documentation in the web.py cookbook. Before running the application, run =python models.py= to set up the SQLite database.
 
 * Interactive Use
-  Because it sets =sqlhub.processConnection= if it doesn't find an environment in =web.ctx=, =load_sqlo()= can be used without web.py:
-#+begin_src python
->>> from models import *
->>> from app import *
->>> load_sqlo()
->>> users=User.select()
->>> for user in users:
-...     print user
 
-<User 1 name='NOJL' fullname='NOJL jGnTzDx' password='542'>
-<User 2 name='Wdym' fullname='Wdym hBSidWI' password='542'>
-<User 3 name='zixt' fullname='zixt JmOuKSA' password='542'>
-#+end_src
+  Because it sets =sqlhub.processConnection= if it doesn't find an environment in =web.ctx=, =load_sqlo()= can be used without web.py:
+
+: >>> from models import *
+: >>> from app import *
+: >>> load_sqlo()
+: >>> users=User.select()
+: >>> for user in users:
+: ...     print user
+: 
+: <User 1 name='NOJL' fullname='NOJL jGnTzDx' password='542'>
+: <User 2 name='Wdym' fullname='Wdym hBSidWI' password='542'>
+: <User 3 name='zixt' fullname='zixt JmOuKSA' password='542'>
