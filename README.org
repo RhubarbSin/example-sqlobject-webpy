@@ -1,6 +1,6 @@
 * Problem
 
-  A [[http://webpy.org/][web.py]] application's code running under the [[https://httpd.apache.org/][Apache HTTP Server]]'s [[https://code.google.com/p/modwsgi/][mod_wsgi]] will typically be executed in multiple processes/threads. Each process/thread will have its own database connection, and [[http://www.sqlobject.org][SQLObject]]'s default caching behavior can easily cause cache coherency issues.
+  A [[http://webpy.org/][web.py]] application's code running under the [[https://httpd.apache.org/][Apache HTTP Server]]'s [[https://code.google.com/p/modwsgi/][mod_wsgi]] will typically be executed in multiple processes/threads. Each process/thread will have its own database connection, and [[http://www.sqlobject.org][SQLObject]]'s default caching behavior can easily cause cache coherency issues. Setting the =sqlmeta= [[http://www.sqlobject.org/SQLObject.html#class-sqlmeta][class variable]] =cacheValues = False= avoids the problem but degrades performance.
 
 * Solution
 
