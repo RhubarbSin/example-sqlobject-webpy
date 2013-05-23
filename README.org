@@ -1,4 +1,4 @@
-SQLObject with web.py under mod_wsgi
+Example of Using SQLObject with web.py under mod_wsgi
 
 * Problem
   A [[http://webpy.org/][web.py]] application's code running under the [[https://httpd.apache.org/][Apache HTTP Server]]'s [[https://code.google.com/p/modwsgi/][mod_wsgi]] will typically be executed in multiple processes/threads. Each process/thread will have its own database connection, and [[http://www.sqlobject.org][SQLObject]]'s default caching behavior can easily cause cache coherency issues.
@@ -6,7 +6,7 @@ SQLObject with web.py under mod_wsgi
 * Solution
   Use a load hook that opens a new [[http://www.sqlobject.org/SQLObject.html#transactions][transaction]] for each handler call. If not running as a web.py application (e.g. running in an interactive interpreter for testing/debugging), just open a regular connection.
 #+begin_src python
-def load_sqlo(handler):
+def load_sqlo(handler=None):
     con = connectionForURI('sqlite:mydatabase.db')
     if not web.ctx.has_key('env'):  # not using web.py
         sqlhub.processConnection = con

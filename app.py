@@ -12,7 +12,7 @@ urls = (
     "/view", "view"
 )
 
-def load_sqlo(handler):
+def load_sqlo(handler=None):
     con = connectionForURI('sqlite:mydatabase.db')
     if not web.ctx.has_key('env'):  # not using web.py
         sqlhub.processConnection = con
